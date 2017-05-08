@@ -396,7 +396,7 @@ def create_generator(generator_inputs, generator_outputs_channels):
         output = tf.tanh(output)
         layers.append(output)
 
-    layers.append(tf.identity(layers[-1], name='generator_outputs')     
+    layers.append(tf.identity(layers[-1], name='generator_outputs'))     
 
     return layers[-1]
 
@@ -432,7 +432,7 @@ def create_model(inputs, targets):
         with tf.variable_scope("layer_%d" % (len(layers) + 1)):
             convolved = conv(rectified, out_channels=1, stride=1)
             output = tf.sigmoid(convolved)
-            layers.append(output)   
+            layers.append(output)
 
         return layers[-1]
 
