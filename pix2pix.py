@@ -810,7 +810,6 @@ def main():
                     print("discrim_loss", results["discrim_loss"])
                     print("gen_loss_GAN", results["gen_loss_GAN"])
                     print("gen_loss_L1", results["gen_loss_L1"])
-                    print("generator_loss_total", results["generator_loss_total"])
 
                 if should(a.save_freq):
                     print("saving model")
