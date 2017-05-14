@@ -298,7 +298,7 @@ def load_examples():
         if a.flip:
             r = tf.image.random_flip_left_right(r, seed=seed)
 	#    536                                     512        1024
-	scale_size_jitter = tf.random_uniform([1], CROP_SIZE, a.scale_size, seed=seed, dtype=tf.int32)
+	scale_size_jitter = tf.random_uniform([1], CROP_SIZE, a.scale_size + 1, seed=seed, dtype=tf.int32)
         # area produces a nice downscaling, but does nearest neighbor for upscaling
         # assume we're going to be doing downscaling here
         r = tf.image.resize_images(r, [scale_size_jitter[0], scale_size_jitter[0]], method=tf.image.ResizeMethod.AREA)
