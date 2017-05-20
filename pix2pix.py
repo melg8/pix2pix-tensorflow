@@ -233,6 +233,15 @@ def lab_to_rgb(lab):
 
         return tf.reshape(srgb_pixels, tf.shape(lab))
 
+def distort_with_box(image, iter_seed):    
+    box_size = tf.random_uniform([2], 128, 256 + 1, seed=iter_seed, dtype=tf.int32)
+    box_x_offset = tf.random_uniform([2], 0, CROP_SIZE - box_size[0] + 1, seed=iter_seed, dtype=tf.int32)
+    box_y_offset = tf.random_uniform([2], 0, CROP_SIZE - box_size[1] + 1, seed=iter_seed, dtype=tf.int32)
+
+    image_0 = tf.fill([box_size[0], box_size[1], 3], 2.0)
+    image_1 = tf.image.pad_to_bounding_box(image_0, box_x_offset[0], box_y_offset[1], CROP_SIZE, CROP_SIZE)
+    return tf.clip_by_value(image + image_1, -1.0, 1.0)
+
 
 def load_examples():
     if a.input_dir is None or not os.path.exists(a.input_dir):
@@ -257,6 +266,7 @@ def load_examples():
         input_paths = sorted(input_paths, key=lambda path: int(get_name(path)))
     else:
         input_paths = sorted(input_paths)
+
 
     with tf.name_scope("load_images"):
         path_queue = tf.train.string_input_producer(input_paths, shuffle=a.mode == "train")
@@ -311,7 +321,7 @@ def load_examples():
         return r
 
     with tf.name_scope("input_images"):
-        input_images = transform(inputs)
+        input_images = distort_with_box(transform(inputs), seed)
 
     with tf.name_scope("target_images"):
         target_images = transform(targets)
