@@ -234,7 +234,7 @@ def lab_to_rgb(lab):
         return tf.reshape(srgb_pixels, tf.shape(lab))
 
 def distort_with_box(image, iter_seed):    
-    box_size = tf.random_uniform([2], 128, 256 + 1, seed=iter_seed, dtype=tf.int32)
+    box_size = tf.random_uniform([2], 128, 256 + 128 + 1, seed=iter_seed, dtype=tf.int32)
     box_x_offset = tf.random_uniform([2], 0, CROP_SIZE - box_size[0] + 1, seed=iter_seed, dtype=tf.int32)
     box_y_offset = tf.random_uniform([2], 0, CROP_SIZE - box_size[1] + 1, seed=iter_seed, dtype=tf.int32)
 
@@ -736,7 +736,7 @@ def main():
     with tf.name_scope("parameter_count"):
         parameter_count = tf.reduce_sum([tf.reduce_prod(tf.shape(v)) for v in tf.trainable_variables()])
 
-    saver = tf.train.Saver(max_to_keep=3)
+    saver = tf.train.Saver(max_to_keep=2)
 
     logdir = a.output_dir if (a.trace_freq > 0 or a.summary_freq > 0) else None
     sv = tf.train.Supervisor(logdir=logdir, save_summaries_secs=0, saver=None)
