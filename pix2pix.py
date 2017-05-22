@@ -38,6 +38,7 @@ parser.add_argument("--scale_size", type=int, default=1024, help="scale images t
 parser.add_argument("--flip", dest="flip", action="store_true", help="flip images horizontally")
 parser.add_argument("--no_flip", dest="flip", action="store_false", help="don't flip images horizontally")
 parser.set_defaults(flip=True)
+parser.add_argument("--inpaint", dest="inpaint", action="store_true", help="Create white boxed image for inpainting")
 parser.add_argument("--lr", type=float, default=0.0002, help="initial learning rate for adam")
 parser.add_argument("--beta1", type=float, default=0.5, help="momentum term of adam")
 parser.add_argument("--l1_weight", type=float, default=100.0, help="weight on L1 term for generator gradient")
@@ -287,6 +288,9 @@ def load_examples():
             L_chan, a_chan, b_chan = preprocess_lab(lab)
             a_images = tf.expand_dims(L_chan, axis=2)
             b_images = tf.stack([a_chan, b_chan], axis=2)
+        elif a.inpaint:
+	    a_images = preprocess(raw_input)
+            b_images = a_images
         else:
             # break apart image pair and move to range [-1, 1]
             width = tf.shape(raw_input)[1] # [height, width, channels]
@@ -321,7 +325,9 @@ def load_examples():
         return r
 
     with tf.name_scope("input_images"):
-        input_images = distort_with_box(transform(inputs), seed)
+        input_images = transform(inputs)
+        if a.inpaint:
+	    input_images = distort_with_box(input_images, seed)
 
     with tf.name_scope("target_images"):
         target_images = transform(targets)
